@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import 'package:timer_with_dices/database/dbSettings.dart';
 import 'package:timer_with_dices/models/settingsModel.dart';
@@ -102,3 +103,4 @@ icon: Icons.share,
 onTap: () => _showSnackBar('Share'),
 ),
 ],
+*/

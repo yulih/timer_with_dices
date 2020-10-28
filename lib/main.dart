@@ -128,135 +128,138 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
           title: Text(widget.title),
         ),
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 40),
-              Text(timerText, style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 10),
-              Slider(
-                value: _currentSliderValueTimer,
-                min: 0,
-                max: _currentSliderValueTimerMax,
-                divisions: 360,
-                label: _currentSliderValueTimer.round().toString(),
-                onChanged: (double value) {
-                  setState(() {
-                    onSliderChangeTimer(value);
-                  });
-                },
-              ),
-              Container(
-                  height: 30,
-                  margin: const EdgeInsets.only(right: 80, left: 80),
-                  child: TextField(
-                    controller: textControllerTimer,
-                    onChanged: (text) {
-                      setState(() {
-                        SetTimerText(double.parse(text));
-                      });
-                    },
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Enter timer in seconds (leave empty for no timer)',
-                    ),
-                  )),
-              const SizedBox(width: 30),
-              const SizedBox(height: 40),
-              Text(textDice, style: TextStyle(fontWeight: FontWeight.bold)),
-              Slider(
-                value: _currentSliderValueDice,
-                min: 0,
-                max: 5,
-                divisions: 5,
-                label: _currentSliderValueDice.round().toString(),
-                onChanged: (double value) {
-                  setState(() {
-                    onSliderChangeDice(value);
-                  });
-                },
-              ),
-              const SizedBox(height: 40),
-              new Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ButtonTheme(
-                    buttonColor: Colors.deepOrangeAccent,
-                    child: RaisedButton(
-                      onPressed: () {
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(height: 40),
+                Text(timerText, style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 10),
+                Slider(
+                  value: _currentSliderValueTimer,
+                  min: 0,
+                  max: _currentSliderValueTimerMax,
+                  divisions: 360,
+                  label: _currentSliderValueTimer.round().toString(),
+                  onChanged: (double value) {
+                    setState(() {
+                      onSliderChangeTimer(value);
+                    });
+                  },
+                ),
+                Container(
+                    height: 50,
+                    margin: const EdgeInsets.only(right: 80, left: 80),
+                    child: TextField(
+                      controller: textControllerTimer,
+                      onChanged: (text) {
                         setState(() {
-                          clear();
+                          SetTimerText(double.parse(text));
                         });
                       },
-                      child: const Text('CLEAR', style: TextStyle(fontSize: 20)),
-                    ),
-                  ),
-                  const SizedBox(width: 40),
-                  ButtonTheme(
-                    buttonColor: Colors.deepOrangeAccent,
-                    child: RaisedButton(
-                      onPressed: () {
-                        _showLoadStates();
-                      },
-                      child: const Text('LOAD', style: TextStyle(fontSize: 20)),
-                    ),
-                  ),
-                  const SizedBox(width: 40),
-                  ButtonTheme(
-                    buttonColor: Colors.deepOrangeAccent,
-                    child: RaisedButton(
-                      onPressed: () {
-                        _saveStates();
-                      },
-                      child: const Text('SAVE', style: TextStyle(fontSize: 20)),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 40),
-              ButtonTheme(
-                minWidth: 200.0,
-                buttonColor: Colors.deepOrange,
-                textTheme: ButtonTextTheme.accent,
-                colorScheme: Theme.of(context).colorScheme.copyWith(secondary: Colors.white),
-                child: RaisedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ActionRoute(
-                                timer: _currentSliderValueTimerParam,
-                                dices: _currentSliderValueDice,
-                              )),
-                    );
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Enter timer in seconds (leave empty for no timer)',
+                      ),
+                    )),
+                const SizedBox(width: 30),
+                const SizedBox(height: 40),
+                Text(textDice, style: TextStyle(fontWeight: FontWeight.bold)),
+                Slider(
+                  value: _currentSliderValueDice,
+                  min: 0,
+                  max: 5,
+                  divisions: 5,
+                  label: _currentSliderValueDice.round().toString(),
+                  onChanged: (double value) {
+                    setState(() {
+                      onSliderChangeDice(value);
+                    });
                   },
-                  child: const Text(
-                    'START',
-                    style: TextStyle(fontSize: 20),
+                ),
+                const SizedBox(height: 40),
+                new Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    ButtonTheme(
+                      buttonColor: Colors.deepOrangeAccent,
+                      child: RaisedButton(
+                        onPressed: () {
+                          setState(() {
+                            clear();
+                          });
+                        },
+                        child: const Text('CLEAR', style: TextStyle(fontSize: 20)),
+                      ),
+                    ),
+                    const SizedBox(width: 40),
+                    ButtonTheme(
+                      buttonColor: Colors.deepOrangeAccent,
+                      child: RaisedButton(
+                        onPressed: () {
+                          _showLoadStates();
+                        },
+                        child: const Text('LOAD', style: TextStyle(fontSize: 20)),
+                      ),
+                    ),
+                    const SizedBox(width: 40),
+                    ButtonTheme(
+                      buttonColor: Colors.deepOrangeAccent,
+                      child: RaisedButton(
+                        onPressed: () {
+                          _saveStates();
+                        },
+                        child: const Text('SAVE', style: TextStyle(fontSize: 20)),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                ButtonTheme(
+                  minWidth: 200.0,
+                  buttonColor: Colors.deepOrange,
+                  textTheme: ButtonTextTheme.accent,
+                  colorScheme: Theme.of(context).colorScheme.copyWith(secondary: Colors.white),
+                  child: RaisedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ActionRoute(
+                                  timer: _currentSliderValueTimerParam,
+                                  dices: _currentSliderValueDice,
+                                )),
+                      );
+                    },
+                    child: const Text(
+                      'START',
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 40),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  new Text(
-                    "Selected template: ",
-                    style: new TextStyle(
-                      color: Colors.black45,
+                const SizedBox(height: 40),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    new Text(
+                      "Selected template: ",
+                      style: new TextStyle(
+                        color: Colors.black45,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  new Text(settingsTemplateNameText, style: TextStyle(fontWeight: FontWeight.bold)),
-                ],
-              ),
-            ],
+                    const SizedBox(height: 10),
+                    new Text(settingsTemplateNameText, style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ],
+            ),
           ),
         ));
   }
