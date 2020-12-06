@@ -6,8 +6,15 @@ import 'package:timer_with_dices/statefulwidgets/saveStatesWindow.dart';
 import 'Action.dart';
 import "package:timer_with_dices/models/settingsModel.dart";
 import "package:timer_with_dices/database/dbSettings.dart";
+import "ColorManagement.dart";
 
-void main() {
+enum RadiobuttonSelection { red, black, community }
+Color currThemeColor = AppColors.PRIMARY_COLOR_RED;
+
+void main() async {
+  //Brightness brightness;
+  //SharedPreferences prefs = await SharedPreferences.getInstance();
+  //brightness = Brightness.dark;
   runApp(MyApp());
 }
 
@@ -17,11 +24,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
+      theme: new ThemeData(
         primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Timer & Dice(s)'),
+      home: new MyHomePage(
+          title: 'Timer & Dice(s)',
+      ),
     );
   }
 }
@@ -46,6 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String settingsTemplateNameText;
   String textDice;
   String lastSettingStr = 'lastSetting';
+  RadiobuttonSelection _character = RadiobuttonSelection.red;
 
   var textControllerTimer = new TextEditingController();
 
@@ -87,15 +97,25 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _getLastUsedTemplate() async {
-    //Settings lastUsedSetting = await helper.readSingle(lastSettingStr);
     SetSettings(60, 2, "");
+    await helper.readSingle(lastSettingStr).then((value){
+      setState(() {
+        if(value == null){
+          SetSettings(60, 2, "");
+        }
+        else{
+          SetSettings(value.timer, value.dices, "");
+        }
+        Settings lastUsedSetting = value;
+      });
+    });
   }
 
-  void SetSettings(double timer, double dices, String template) {
-    SetTimerText(timer);
+  void SetSettings(int timer, int dices, String template) {
+    SetTimerText(timer.toDouble());
     textControllerTimer.text = timer.toInt().toString();
     textDice = "Dice(s): " + dices.toInt().toString();
-    _currentSliderValueDice = dices;
+    _currentSliderValueDice = dices.toDouble();
     settingsTemplateNameText = template;
   }
 
@@ -127,12 +147,43 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: Text(widget.title),
+          title: Row(
+            children: [
+              Text(widget.title),
+              Radio(
+                value: RadiobuttonSelection.red,
+                groupValue: _character,
+                onChanged: (RadiobuttonSelection value) {
+                  setState(() {
+                    _changeTheme(value);
+                    _character = value;
+                  });
+                },
+              ),
+              Radio(
+                value: RadiobuttonSelection.black,
+                groupValue: _character,
+                onChanged: (RadiobuttonSelection value) {
+                  setState(() {
+                    _changeTheme(value);
+                    _character = value; });
+                },),
+              Radio(
+                value: RadiobuttonSelection.community,
+                groupValue: _character,
+                onChanged: (RadiobuttonSelection value) {
+                  setState(() {
+                    _changeTheme(value);
+                    _character = value; });
+                },)
+            ],
+          ),
         ),
         body: Center(
           child: SingleChildScrollView(
@@ -264,6 +315,26 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
   }
 
+  void _changeTheme(RadiobuttonSelection themeColor){
+
+    switch(themeColor) {
+      case RadiobuttonSelection.red:{
+        currThemeColor = AppColors.PRIMARY_COLOR_RED;
+      }
+      break;
+      case RadiobuttonSelection.black:{
+        currThemeColor = AppColors.PRIMARY_COLOR_DARK;
+      }
+      break;
+      case RadiobuttonSelection.community:{
+        currThemeColor = AppColors.PRIMARY_COLOR_LIGHT;
+      }
+      break;
+
+
+    }
+  }
+
   void _showLoadStates() {
     showDialog(
         context: context,
@@ -298,7 +369,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   refreshSettings(double timer, double dices, String template) {
     setState(() {
-      SetSettings(timer, dices, template);
+      SetSettings(timer.toInt(), dices.toInt(), template);
     });
   }
 

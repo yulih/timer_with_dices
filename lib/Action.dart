@@ -2,9 +2,12 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'DiceGrid.dart';
 import 'dart:math';
+import 'package:vibration/vibration.dart';
+import 'package:audioplayers/audio_cache.dart';
 
 class ActionRoute extends StatefulWidget {
   ActionRoute({Key key, this.title, double this.timer, double this.dices}) : super(key: key);
@@ -29,13 +32,14 @@ class _ActionRoute extends State<ActionRoute> {
   startTimeout(num duration) {
     if (_timer != null) {
       _timer.cancel();
+      Vibration.cancel();
     }
     _timeTick = duration.toInt();
     _timer = new Timer.periodic(
       s,
       (Timer timer) => setState(
         () {
-          if (_timeTick < 1) {
+          if (_timeTick < 2) {
             handleTimeout(timer);
           } else {
             _timeTick = _timeTick - 1;
@@ -65,9 +69,20 @@ class _ActionRoute extends State<ActionRoute> {
       ),
     );
   }
-
+  //
   // callback function
-  void handleTimeout(Timer timer) {
+  handleTimeout(Timer timer) async {
+    _timeTick = 0;
+    AudioCache player = new AudioCache();
+    const alarmAudioPath = "0073.wav";
+    player.play(alarmAudioPath);
+    if (await Vibration.hasVibrator()) {
+      Vibration.vibrate(duration: 1200, amplitude: 128);
+/*    Vibration.vibrate(
+      pattern: [500, 1000, 500, 2000, 500, 3000, 500, 500],
+      intensities: [128, 255, 64, 255],
+    );*/
+    }
     timer.cancel();
   }
 
@@ -84,7 +99,10 @@ class _ActionRoute extends State<ActionRoute> {
     super.initState();
   }
 
-  void generateDiceGrid() {
+  Future<void> generateDiceGrid() async {
+    if (await Vibration.hasVibrator()) {
+    Vibration.vibrate(duration: 500, amplitude: 128);
+    }
     _timeTick = widget.timer.toInt();
     diceRollAnimation();
     Timer(Duration(milliseconds: 700), () {
@@ -101,7 +119,10 @@ class _ActionRoute extends State<ActionRoute> {
       ),
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => generateDiceGrid(),
+        onTap: () {
+          HapticFeedback.heavyImpact();
+          generateDiceGrid();
+          },
         child: Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(

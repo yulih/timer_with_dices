@@ -1,4 +1,4 @@
-package com.example.timer_with_dices
+package hua.yuli.timer_with_dices
 
 import io.flutter.embedding.android.FlutterActivity
 
