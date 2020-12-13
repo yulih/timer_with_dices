@@ -34,7 +34,7 @@ class _LoadStates extends State<LoadStates> {
             itemCount: items.length,
             itemBuilder: (BuildContext context, int index) {
               Settings project = snapshot.data[index];
-              final item = project.configname;
+              final item = project.templateName;
               return Dismissible(
                 // Each Dismissible must contain a Key. Keys allow Flutter to
                 // uniquely identify widgets.
@@ -71,15 +71,15 @@ class _LoadStates extends State<LoadStates> {
 
   _loadState(String id) async {
     setting = await helper.readSingle(id);
-    widget.notifyParent(setting.timer.toDouble(), setting.dices.toDouble(), setting.configname);
-    print(setting.configname);
+    print('template name: ' + setting.templateName + ', theme: ' + setting.theme);
+    widget.notifyParent(setting.timer.toDouble(), setting.dices.toDouble(), setting.templateName, setting.theme);
   }
 
   _readStates() async {
     var q = await helper.getRowsCnt();
     if (q == 0) {
       Settings setting = Settings(
-          timer: 90, dices: 2, theme: 'bright', configname: 'Catan', currdatetime: TimeUtil.currentTimeInSeconds());
+          timer: 90, dices: 2, theme: 'orange', templateName: 'Catan', currdatetime: TimeUtil.currentTimeInSeconds());
       items = await helper.InsertRead(setting);
       return items;
     }

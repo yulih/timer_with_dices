@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="Timerice (Lightweight timer and dices)"
+        android:label="Timerice (Lightweight timer with dices)"
         android:icon="@mipmap/timer_dice_launcher">
         <activity
             android:name=".MainActivity"

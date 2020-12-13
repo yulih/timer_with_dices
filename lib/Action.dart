@@ -1,20 +1,30 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:timer_with_dices/DiceGridStatic.dart';
+import 'package:timer_with_dices/models/ThemeEnum.dart';
 import 'DiceGrid.dart';
 import 'dart:math';
 import 'package:vibration/vibration.dart';
 import 'package:audioplayers/audio_cache.dart';
 
 class ActionRoute extends StatefulWidget {
-  ActionRoute({Key key, this.title, double this.timer, double this.dices}) : super(key: key);
+  ActionRoute(
+      {Key key,
+      this.title,
+      double this.timer,
+      double this.dices,
+      ThemeEnum this.globalTheme})
+      : super(key: key);
 
   final String title;
   final double timer;
   final double dices;
+  final ThemeEnum globalTheme;
 
   @override
   _ActionRoute createState() => _ActionRoute();
@@ -28,6 +38,9 @@ class _ActionRoute extends State<ActionRoute> {
 
   static const s = const Duration(seconds: 1);
   static const ms = const Duration(milliseconds: 1);
+
+  AudioCache _audioCache;
+  String url_start = "0014.wav";
 
   startTimeout(num duration) {
     if (_timer != null) {
@@ -69,6 +82,7 @@ class _ActionRoute extends State<ActionRoute> {
       ),
     );
   }
+
   //
   // callback function
   handleTimeout(Timer timer) async {
@@ -77,7 +91,7 @@ class _ActionRoute extends State<ActionRoute> {
     const alarmAudioPath = "0073.wav";
     player.play(alarmAudioPath);
     if (await Vibration.hasVibrator()) {
-      Vibration.vibrate(duration: 1200, amplitude: 128);
+      Vibration.vibrate(duration: 800, amplitude: 128);
 /*    Vibration.vibrate(
       pattern: [500, 1000, 500, 2000, 500, 3000, 500, 500],
       intensities: [128, 255, 64, 255],
@@ -96,12 +110,26 @@ class _ActionRoute extends State<ActionRoute> {
   @override
   void initState() {
     generateDiceGrid();
+    //AudioPlayer.logEnabled = true;
+    _audioCache = AudioCache(prefix: "assets/", fixedPlayer: AudioPlayer()..setReleaseMode(ReleaseMode.STOP));
+    _audioCache.play(url_start);
     super.initState();
+  }
+
+  List<Color> getColorGradient(ThemeEnum theme) {
+    switch (theme) {
+      case ThemeEnum.orange:
+        return [Colors.orangeAccent, Colors.red];
+      case ThemeEnum.black:
+        return [Colors.black, Colors.black];
+      case ThemeEnum.community:
+        return [Color(0xff543864), Color(0xff202040)];
+    }
   }
 
   Future<void> generateDiceGrid() async {
     if (await Vibration.hasVibrator()) {
-    Vibration.vibrate(duration: 500, amplitude: 128);
+      Vibration.vibrate(duration: 300, amplitude: 128);
     }
     _timeTick = widget.timer.toInt();
     diceRollAnimation();
@@ -115,21 +143,21 @@ class _ActionRoute extends State<ActionRoute> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Timer (Tap screen to start!)"),
+        title: Text("Timer - Tap to start!"),
       ),
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
-          HapticFeedback.heavyImpact();
+          _audioCache.play(url_start);
           generateDiceGrid();
-          },
+        },
         child: Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   stops: [0.3, 1],
-                  colors: [Colors.orangeAccent, Colors.red])),
+                  colors: getColorGradient(widget.globalTheme))),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -138,16 +166,12 @@ class _ActionRoute extends State<ActionRoute> {
                     flex: 1,
                     child: Center(
                       child: Text('$_timeTick',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40, color: Colors.white54)),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
+                              color: Colors.white54)),
                     )),
-                Expanded(
-                  flex: 2,
-                  child: DiceGrid(
-                    color: Colors.green,
-                    dices: widget.dices,
-                    listImages: _listImages,
-                  ),
-                ),
+                DiceGridStatic(dices: widget.dices, listImages: _listImages,)
               ],
             ),
           ),

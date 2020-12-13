@@ -26,6 +26,7 @@ class _DialogWithTextFieldState extends State<DialogWithTextField> {
 
   @override
   Widget build(BuildContext context) {
+    FocusNode myFocusNode = new FocusNode();
     return Container(
       height: 220,
       decoration: BoxDecoration(
@@ -51,10 +52,15 @@ class _DialogWithTextFieldState extends State<DialogWithTextField> {
               child: TextFormField(
                 controller: configNameController,
                 maxLines: 1,
-                autofocus: false,
+                autofocus: true,
+                focusNode: myFocusNode,
                 keyboardType: TextInputType.text,
+                style: TextStyle(color: Colors.deepPurpleAccent),
                 decoration: InputDecoration(
-                  labelText: 'Enter name',
+                  labelText: 'Enter template name',
+                  labelStyle: TextStyle(
+                      color: myFocusNode.hasFocus ? Colors.blue : Colors.black
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
@@ -100,7 +106,7 @@ _save(String configName, int cnt, int dices, int timer, String theme) async {
   var currentTimeInSecs = TimeUtil.currentTimeInSeconds();
   print(currentTimeInSecs.toString());
   Settings setting =
-      Settings(configname: configName, dices: dices, timer: timer, theme: theme, currdatetime: currentTimeInSecs);
+      Settings(templateName: configName, dices: dices, timer: timer, theme: theme, currdatetime: currentTimeInSecs);
   DatabaseSettings helper = DatabaseSettings.instance;
   int id = await helper.insert(setting);
   print('inserted row: $id');

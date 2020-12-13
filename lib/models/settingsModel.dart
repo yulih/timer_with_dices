@@ -1,13 +1,14 @@
 import 'package:timer_with_dices/database/dbSettings.dart';
+import 'package:timer_with_dices/models/ThemeEnum.dart';
 
 class Settings {
   int timer;
   int dices;
   String theme;
-  String configname;
+  String templateName;
   int currdatetime;
 
-  Settings({this.configname, this.timer, this.theme, this.dices, this.currdatetime});
+  Settings({this.templateName, this.timer, this.theme, this.dices, this.currdatetime});
 
   // Convert a Setting into a Map. The keys must correspond to the names of the
   // columns in the database.
@@ -16,7 +17,7 @@ class Settings {
       'timer': timer,
       'theme': theme,
       'dices': dices,
-      'configname': configname,
+      'configname': templateName,
       'currDateTime': currdatetime,
     };
   }
@@ -26,7 +27,7 @@ class Settings {
     this.timer = map[dbTimer];
     this.dices = map[dbDices];
     this.theme = map[dbTheme];
-    this.configname = map[dbConfigNameId];
+    this.templateName = map[dbConfigNameId];
     this.currdatetime = map[dbCurrDateTime];
   }
 }

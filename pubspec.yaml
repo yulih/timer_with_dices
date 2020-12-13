@@ -54,6 +54,7 @@ flutter:
   assets:
     - assets/images/
     - assets/0073.wav
+    - assets/0014.wav
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
