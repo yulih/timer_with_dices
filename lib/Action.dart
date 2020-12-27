@@ -11,6 +11,7 @@ import 'DiceGrid.dart';
 import 'dart:math';
 import 'package:vibration/vibration.dart';
 import 'package:audioplayers/audio_cache.dart';
+import 'package:wakelock/wakelock.dart';
 
 class ActionRoute extends StatefulWidget {
   ActionRoute(
@@ -40,7 +41,8 @@ class _ActionRoute extends State<ActionRoute> {
   static const ms = const Duration(milliseconds: 1);
 
   AudioCache _audioCache;
-  String url_start = "0014.wav";
+  //String url_start = "0014.wav";
+  String url_start = "00dice.mp3";
 
   startTimeout(num duration) {
     if (_timer != null) {
@@ -74,7 +76,7 @@ class _ActionRoute extends State<ActionRoute> {
             _listImages.clear();
             var rng = new Random();
             for (var i = 1; i <= widget.dices; i++) {
-              var num = rng.nextInt(5) + 1;
+              var num = rng.nextInt(6) + 1;
               _listImages.add('assets/images/dice$num.png');
             }
           });
@@ -102,6 +104,8 @@ class _ActionRoute extends State<ActionRoute> {
 
   @override
   void dispose() {
+    // The next line disables the wakelock again.
+    Wakelock.disable();
     _timer.cancel();
     _timerAnimation.cancel();
     super.dispose();
@@ -109,6 +113,8 @@ class _ActionRoute extends State<ActionRoute> {
 
   @override
   void initState() {
+    // The following line will enable the Android and iOS wakelock.
+    Wakelock.enable();
     generateDiceGrid();
     //AudioPlayer.logEnabled = true;
     _audioCache = AudioCache(prefix: "assets/", fixedPlayer: AudioPlayer()..setReleaseMode(ReleaseMode.STOP));

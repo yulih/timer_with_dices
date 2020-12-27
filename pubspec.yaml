@@ -30,6 +30,7 @@ dependencies:
   vibration: ^1.7.1
   audioplayers: ^0.16.2
   dynamic_theme: ^1.0.1
+  wakelock: ^0.2.1+1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -55,6 +56,7 @@ flutter:
     - assets/images/
     - assets/0073.wav
     - assets/0014.wav
+    - assets/00dice.mp3
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
