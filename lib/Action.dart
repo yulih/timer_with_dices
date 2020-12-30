@@ -183,7 +183,7 @@ class _ActionRoute extends State<ActionRoute> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Single, double or long press!"),
+        title: Text("Tap once, twice or long press!"),
       ),
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
