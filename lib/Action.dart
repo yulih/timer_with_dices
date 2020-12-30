@@ -35,6 +35,8 @@ class _ActionRoute extends State<ActionRoute> {
   Timer _timer;
   Timer _timerAnimation;
   int _timeTick;
+  int _timeTickBreak;
+  bool _timerIsPaused;
   List<String> _listImages = [];
 
   static const s = const Duration(seconds: 1);
@@ -42,7 +44,9 @@ class _ActionRoute extends State<ActionRoute> {
 
   AudioCache _audioCache;
   //String url_start = "0014.wav";
-  String url_start = "00dice.mp3";
+  String url_start = "rolldice.mp3";
+  String url_stop = "stopbell.mp3";
+  String url_end = "endbell.mp3";
 
   startTimeout(num duration) {
     if (_timer != null) {
@@ -65,9 +69,7 @@ class _ActionRoute extends State<ActionRoute> {
   }
 
   diceRollAnimation() {
-    if (_timerAnimation != null) {
-      _timerAnimation.cancel();
-    }
+    stopAnimation();
     _timerAnimation = new Timer.periodic(
       ms * 100, //interval
       (Timer timer) => setState(
@@ -85,13 +87,31 @@ class _ActionRoute extends State<ActionRoute> {
     );
   }
 
+  resetDices() {
+    stopAnimation();
+    setState(() {
+      _listImages.clear();
+    }
+    );
+  }
+
+  stopAnimation() {
+    if (_timerAnimation != null) {
+      _timerAnimation.cancel();
+    }
+  }
   //
   // callback function
   handleTimeout(Timer timer) async {
     _timeTick = 0;
     AudioCache player = new AudioCache();
     const alarmAudioPath = "0073.wav";
-    player.play(alarmAudioPath);
+    if (_timeTickBreak == 1){
+      //_audioCache.play(url_end);
+    }
+    else{
+      player.play(alarmAudioPath);
+    }
     if (await Vibration.hasVibrator()) {
       Vibration.vibrate(duration: 800, amplitude: 128);
 /*    Vibration.vibrate(
@@ -99,6 +119,7 @@ class _ActionRoute extends State<ActionRoute> {
       intensities: [128, 255, 64, 255],
     );*/
     }
+    _timeTickBreak = 0;
     timer.cancel();
   }
 
@@ -119,6 +140,7 @@ class _ActionRoute extends State<ActionRoute> {
     //AudioPlayer.logEnabled = true;
     _audioCache = AudioCache(prefix: "assets/", fixedPlayer: AudioPlayer()..setReleaseMode(ReleaseMode.STOP));
     _audioCache.play(url_start);
+    _timerIsPaused = false;
     super.initState();
   }
 
@@ -145,17 +167,48 @@ class _ActionRoute extends State<ActionRoute> {
     startTimeout(widget.timer);
   }
 
+  Future<void> resetDiceGrid() async {
+    if (await Vibration.hasVibrator()) {
+      Vibration.vibrate(duration: 300, amplitude: 128);
+    }
+    _timeTick = 0;
+    resetDices();
+    Timer(Duration(milliseconds: 500), () {
+      _timerAnimation.cancel();
+    });
+    //startTimeout(widget.timer);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Timer - Tap to start!"),
+        title: Text("Single, double or long press!"),
       ),
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
           _audioCache.play(url_start);
           generateDiceGrid();
+          _timerIsPaused=false;
+        },
+        onDoubleTap: () {
+          _audioCache.play(url_stop);
+          if(_timerIsPaused){
+            startTimeout(_timeTick);
+            _timerIsPaused=false;
+          }
+          else{
+            stopAnimation();
+            _timer.cancel();
+            _timerIsPaused=true;
+          }
+        },
+        onLongPress: () {
+          _audioCache.play(url_end);
+          _timeTickBreak = 1;
+          resetDiceGrid();
+          _timerIsPaused=false;
         },
         child: Container(
           decoration: BoxDecoration(
