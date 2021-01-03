@@ -156,6 +156,7 @@ class _ActionRoute extends State<ActionRoute> {
   }
 
   Future<void> generateDiceGrid() async {
+    startTimeout(widget.timer);
     if (await Vibration.hasVibrator()) {
       Vibration.vibrate(duration: 300, amplitude: 128);
     }
@@ -164,7 +165,6 @@ class _ActionRoute extends State<ActionRoute> {
     Timer(Duration(milliseconds: 700), () {
       _timerAnimation.cancel();
     });
-    startTimeout(widget.timer);
   }
 
   Future<void> resetDiceGrid() async {
@@ -188,8 +188,10 @@ class _ActionRoute extends State<ActionRoute> {
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
-          _audioCache.play(url_start);
+          //Vibration.vibrate();
           generateDiceGrid();
+          //resetDiceGrid();
+          _audioCache.play(url_start);
           _timerIsPaused=false;
         },
         onDoubleTap: () {
